@@ -1,43 +1,41 @@
 # Airlines Manager Finder
 
-Airlines Manager Finder adalah aplikasi Android yang memudahkan pengguna untuk mencari, memantau, dan mengelola informasi maskapai penerbangan secara real-time. Aplikasi ini dilengkapi dengan berbagai fitur interaktif dan antarmuka yang intuitif untuk pengalaman pengguna yang optimal.
+**Version:** 4.7  
+**Release Date:** 22 Agustus 2025  
+**Platform:** Android  
+**Package Name:** `com.airlinesmanagerfinder`
 
 ---
 
-## 📌 Fitur Utama
+## **Description**
 
-- **WebView Terintegrasi:** Menampilkan halaman maskapai penerbangan dengan pengaturan lengkap.
-- **Autentikasi PIN:** Fitur keamanan PIN saat masuk dan keluar aplikasi (reset 3 menit jika salah 3x).
-- **Progress Bar:** Indikator loading WebView dengan warna merah/hijau sesuai versi.
-- **Login & Registrasi Dummy:** Mendukung login dan pembuatan akun dummy (email & password).
-- **Menu Toolbar Lengkap:**
-  - Logout
-  - Ubah warna toolbar (19 pilihan warna, disimpan)
-  - Tentang aplikasi
-  - Kebijakan privasi
-  - Mode gelap/terang
-  - Set/hapus PIN
-- **Multi WebView:** Mendukung beberapa WebView dalam satu aplikasi (fitur premium).
-- **Rotasi Layar Otomatis:** Mendukung tampilan lanskap & potret secara fleksibel.
-- **Fitur IPTV (opsional):** Menggunakan file M3U dari folder `assets`.
-- **Splash Screen:** Tampilan awal aplikasi yang menarik selama 5 detik.
+Airlines Manager Finder adalah aplikasi Android yang dirancang untuk membantu pengguna mengakses informasi maskapai, jadwal penerbangan, dan fitur manajemen penerbangan secara mudah dan cepat melalui WebView. Versi 4.7 menghadirkan berbagai fitur baru, perbaikan bug, dan peningkatan kinerja untuk pengalaman pengguna yang lebih baik.
 
 ---
 
-## 🛠️ Teknologi & Tools
+## **Features**
 
-- Bahasa: **Kotlin**
-- Platform: **Android**
-- Integrasi:
-  - Firebase Auth (opsional untuk login)
-  - SharedPreferences untuk penyimpanan PIN & warna toolbar
-  - WebView API Android
+### **New in v4.7**
+- **Multi WebView Support:** Buka beberapa WebView secara bersamaan tanpa menutup yang sebelumnya.
+- **Customizable Progress Bar:** Warna progress bar bisa disesuaikan dengan tema.
+- **Firebase Login & Registration (Optional):** Registrasi dan login menggunakan email & password dengan verifikasi email.
+- **Dark Mode / Light Mode:** Pilih tema gelap atau terang dari menu.
+- **Flexible Toolbar Settings:** 19 pilihan warna toolbar yang bisa disimpan dan digunakan secara dinamis.
+
+### **Core Features**
+- Login dan registrasi akun dummy/email
+- Autentikasi PIN dengan reset 3 menit jika salah 3x
+- Toolbar dengan nama aplikasi dan warna kustom
+- WebView dengan pengaturan lengkap (`JavaScript`, `DOM Storage`, `File Access`)
+- Progress bar untuk menampilkan status loading halaman
+- Menu toolbar: logout, ubah warna toolbar, tentang aplikasi, kebijakan privasi, set/hapus PIN
+- Dark mode / light mode support
+- Multi WebView navigation
 
 ---
 
-## ⚡ Cara Instalasi
+## **Installation**
 
-1. Clone repository ini:
-
-```bash
-git clone https://github.com/rossusuan-lab/Airlines-Manager-Finder.git
+1. Clone repository ini:  
+   ```bash
+   git clone https://github.com/rossusuan-lab/Airlines-Manager-Finder.git
