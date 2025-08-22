@@ -1,0 +1,37 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Logout & Theme -->
+    <item android:id="@+id/menu_logout" android:title="Logout" />
+    <item android:id="@+id/menu_theme" android:title="Mode Gelap/Terang" />
+    <item android:id="@+id/action_account" android:title="Akun Saya" />
+
+    <!-- Warna Toolbar -->
+    <item android:id="@+id/menu_color" android:title="Ubah Warna Toolbar" />
+
+    <!-- Tentang & Privacy -->
+    <item android:id="@+id/menu_about" android:title="Tentang Aplikasi" />
+    <item android:id="@+id/menu_privacy" android:title="Kebijakan Privasi" />
+
+    <!-- Sosial Media & GitHub -->
+    <item android:id="@+id/menu_whatsapp" android:title="Grup WhatsApp" />
+    <item android:id="@+id/menu_facebook" android:title="Grup Facebook" />
+    <item android:id="@+id/menu_dev_sosmed" android:title="Developer Sosial" />
+    <item android:id="@+id/menu_update_github" android:title="Update APK GitHub" />
+    <item android:id="@+id/menu_check_update" android:title="Cek Update GitHub" />
+
+    <!-- PIN -->
+    <item android:id="@+id/menu_set_pin" android:title="Set PIN" />
+    <item android:id="@+id/menu_delete_pin" android:title="Hapus PIN" />
+
+    <!-- Multi WebView -->
+    <item android:id="@+id/menu_webview1" android:title="WebView 1" />
+    <item android:id="@+id/menu_webview2" android:title="WebView 2" />
+
+    <!-- Multi Bahasa -->
+    <item android:id="@+id/menu_lang_id" android:title="Bahasa Indonesia" />
+    <item android:id="@+id/menu_lang_en" android:title="English" />
+    <item android:id="@+id/menu_lang_es" android:title="Español" />
+    <item android:id="@+id/menu_lang_ar" android:title="Arabic" />
+
+
+</menu>

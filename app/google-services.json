@@ -1,0 +1,77 @@
+{
+  "project_info": {
+    "project_number": "79390888869",
+    "firebase_url": "https://rg-studio-8538b-default-rtdb.firebaseio.com",
+    "project_id": "rg-studio-8538b",
+    "storage_bucket": "rg-studio-8538b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:79390888869:android:cd6d4afdf6e0a441c64e4c",
+        "android_client_info": {
+          "package_name": "com.airlinesmanagerfinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "79390888869-inutp3qkn158tjcofj7ppv9h8daf006m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgOsaG0K1g3JJhoxtXDWhi5_nVk69pYV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "79390888869-inutp3qkn158tjcofj7ppv9h8daf006m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:79390888869:android:4ddad62759e6b61bc64e4c",
+        "android_client_info": {
+          "package_name": "com.rgstudioapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "79390888869-7scrhfmqvj5od6fspd9p45t46ist82vs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rgstudioapp",
+            "certificate_hash": "3c285ce9651c4d8ce5f310b76de3dd203e74b7a2"
+          }
+        },
+        {
+          "client_id": "79390888869-inutp3qkn158tjcofj7ppv9h8daf006m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgOsaG0K1g3JJhoxtXDWhi5_nVk69pYV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "79390888869-inutp3qkn158tjcofj7ppv9h8daf006m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Airlines Manager Finder</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_theme">Mode Gelap/Terang</string>
+    <string name="menu_color">Ubah Warna Toolbar</string>
+    <string name="menu_about">Tentang Aplikasi</string>
+    <string name="menu_privacy">Kebijakan Privasi</string>
+    <string name="menu_set_pin">Set PIN</string>
+    <string name="menu_delete_pin">Hapus PIN</string>
+    <string name="menu_whatsapp">WhatsApp Developer</string>
+    <string name="menu_facebook">Facebook Developer</string>
+    <string name="menu_developer">Kontak Developer</string>
+    <string name="menu_channel">Saluran Developer</string>
+    <string name="menu_calendar">Kalender</string>
+    <string name="menu_buy_premium">Beli Premium</string>
+</resources>
