@@ -24,8 +24,9 @@
     <item android:id="@+id/menu_delete_pin" android:title="Hapus PIN" />
 
     <!-- Multi WebView -->
-    <item android:id="@+id/menu_webview1" android:title="WebView 1" />
-    <item android:id="@+id/menu_webview2" android:title="WebView 2" />
+    <item android:id="@+id/menu_webview1" android:title="Destinations Finder" />
+    <item android:id="@+id/menu_webview2" android:title="Airlines Finder" />
+
 
     <!-- Multi Bahasa -->
     <item android:id="@+id/menu_lang_id" android:title="Bahasa Indonesia" />
