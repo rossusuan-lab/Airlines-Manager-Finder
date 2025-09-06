@@ -1,5 +1,6 @@
 package com.airlinesmanagerfinder
 
+
 import android.annotation.SuppressLint
 import android.content.*
 import android.graphics.Color
@@ -25,6 +26,16 @@ import androidx.appcompat.app.AppCompatActivity
 import java.util.Calendar
 import java.text.SimpleDateFormat
 import java.util.Locale
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.storage.FirebaseStorage
+import com.bumptech.glide.Glide
+
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,17 +48,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var fullscreenContainer: FrameLayout
     private lateinit var clockText: TextView
-    private val handler = Handler(Looper.getMainLooper())
     private lateinit var timeRunnable: Runnable
+    private lateinit var googleSignInClient: GoogleSignInClient
 
+    
+    
     private var customView: View? = null
     private var customViewCallback: WebChromeClient.CustomViewCallback? = null
+    private var selectedImageUri: Uri? = null
 
     private var pinAttempts = 0
     private var isLocked = false
     private var lockResetHandler: Handler? = null
     private var lockResetRunnable: Runnable? = null
-
+    private val handler = Handler(Looper.getMainLooper())
+    private val RC_SIGN_IN = 9001
+    
+    
     private val colors = arrayOf(
         "#F44336", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#03A9F4",
         "#00BCD4", "#009688", "#4CAF50", "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107",
@@ -63,15 +80,15 @@ class MainActivity : AppCompatActivity() {
     )
 
     // --- Link grup / developer ---
-    private val whatsappGroup = "https://chat.whatsapp.com/LY8ptOPGnJgFT2KN6Tcjiy?mode=ac_t"
-    private val facebookGroup = "https://www.facebook.com/groups/1926257111506201/?ref=share&mibextid=NSMWBT"
+    private val whatsappGroup = "https://chat.whatsapp.com/GKOjsH6NaYOCHeZ6VViRNb?mode=ems_copy_c"
+    private val facebookGroup = "https://www.facebook.com/groups/724743618097854/?ref=share&mibextid=NSMWBT"
     private val developerSocial = "https://whatsapp.com/channel/0029Vb6TLnoKWEKuSHaKIR2X"
-    private val githubRepo = "https://github.com/rossusuan-lab/AM-Finder/releases"
+    private val githubRepo = "https://github.com/rossusuan-lab/Airlines-Manager-Finder/releases"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        
         auth = FirebaseAuth.getInstance()
         preferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
 
@@ -79,10 +96,9 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         clockText = findViewById(R.id.toolbarClock)
-
+        
         startClockUpdater()
-    
-
+        
         progressBar = findViewById(R.id.progressBar)
         progressBar.indeterminateDrawable.setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN)
 
@@ -90,9 +106,24 @@ class MainActivity : AppCompatActivity() {
 
         applyToolbarColor(preferences.getString("toolbarColor", "#8A2BE2")!!)
         applyThemeMode(preferences.getBoolean("darkMode", false))
-
+        
         webView = findViewById(R.id.webView)
         webView2 = findViewById(R.id.webView2)
+        
+        
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+    .requestIdToken(getString(R.string.default_web_client_id)) // dari google-services.json
+    .requestEmail()
+    .build()
+
+googleSignInClient = GoogleSignIn.getClient(this, gso)
+
+val googleSignInButton: Button = findViewById(R.id.googleSignInButton)
+googleSignInButton.setOnClickListener {
+    val signInIntent = googleSignInClient.signInIntent
+    startActivityForResult(signInIntent, RC_SIGN_IN)
+}
+
 
         val user = auth.currentUser
         if (user != null && user.isEmailVerified) {
@@ -105,41 +136,100 @@ class MainActivity : AppCompatActivity() {
     }
 
    // ===================== Login / Register =====================
+   
 private fun showLoginDialog() {
     val layout = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
+        setPadding(50, 20, 50, 10)
+
         val emailInput = EditText(context).apply { hint = "Email" }
         val passInput = EditText(context).apply {
             hint = "Password"
             inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
         }
+
+        val googleBtn = Button(context).apply {
+            text = "Login dengan Google"
+            setOnClickListener {
+                signInWithGoogle()
+            }
+        }
+
         addView(emailInput)
         addView(passInput)
+        addView(googleBtn)
 
         AlertDialog.Builder(this@MainActivity)
-            .setTitle("Login")
+            .setTitle("Login Akun")
             .setView(this)
             .setPositiveButton("Login") { _, _ ->
-                loginWithFirebase(emailInput.text.toString(), passInput.text.toString())
-            }
-            .setNeutralButton("Lupa Password") { _, _ ->
                 val email = emailInput.text.toString()
-                if (email.isNotEmpty()) {
-                    auth.sendPasswordResetEmail(email).addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(this@MainActivity, "Link reset password dikirim ke email.", Toast.LENGTH_LONG).show()
-                        } else {
-                            Toast.makeText(this@MainActivity, "Gagal kirim reset password: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                val password = passInput.text.toString()
+
+                if (email.isNotEmpty() && password.isNotEmpty()) {
+                    auth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                if (auth.currentUser?.isEmailVerified == true) {
+                                    Toast.makeText(this@MainActivity, "Login berhasil", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(this@MainActivity, "Harap verifikasi email terlebih dahulu", Toast.LENGTH_LONG).show()
+                                    auth.signOut()
+                                    showLoginDialog()
+                                }
+                            } else {
+                                Toast.makeText(this@MainActivity, "Login gagal: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                                showLoginDialog()
+                            }
                         }
-                    }
                 } else {
-                    Toast.makeText(this@MainActivity, "Masukkan email untuk reset password", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@MainActivity, "Isi email & password", Toast.LENGTH_LONG).show()
                     showLoginDialog()
                 }
             }
             .setNegativeButton("Daftar") { _, _ -> showRegisterDialog() }
             .setCancelable(false)
             .show()
+    }
+}
+
+private fun signInWithGoogle() {
+    val signInIntent = googleSignInClient.signInIntent
+    startActivityForResult(signInIntent, RC_SIGN_IN)
+}
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+
+    if (requestCode == RC_SIGN_IN) {
+        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+        try {
+            val account = task.getResult(ApiException::class.java)!!
+            firebaseAuthWithGoogle(account.idToken!!)
+        } catch (e: ApiException) {
+            Toast.makeText(this, "Google sign in failed: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+}
+
+private fun firebaseAuthWithGoogle(idToken: String) {
+    val credential = GoogleAuthProvider.getCredential(idToken, null)
+    auth.signInWithCredential(credential).addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            val user = auth.currentUser
+            // Simpan data user ke Firebase Database
+            val db = FirebaseDatabase.getInstance().reference
+            val userMap = mapOf(
+                "username" to (user?.displayName ?: "Google User"),
+                "email" to (user?.email ?: "-"),
+                "photoUrl" to (user?.photoUrl.toString())
+            )
+            user?.uid?.let { db.child("users").child(it).setValue(userMap) }
+
+            Toast.makeText(this, "Login berhasil!", Toast.LENGTH_SHORT).show()
+            checkPIN() // Lanjut ke WebView
+        } else {
+            Toast.makeText(this, "Firebase auth failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 }
 
@@ -164,10 +254,11 @@ private fun loginWithFirebase(email: String, password: String) {
 private fun showRegisterDialog() {
     val layout = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
+        setPadding(50, 20, 50, 10)
 
         val usernameInput = EditText(context).apply { hint = "Nama Pengguna" }
-        val phoneInput = EditText(context).apply { 
-            hint = "Nomor HP" 
+        val phoneInput = EditText(context).apply {
+            hint = "Nomor HP"
             inputType = android.text.InputType.TYPE_CLASS_PHONE
         }
         val emailInput = EditText(context).apply { hint = "Email" }
@@ -176,10 +267,21 @@ private fun showRegisterDialog() {
             inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
         }
 
+        val choosePhotoBtn = Button(context).apply {
+            text = "Pilih Foto Profil"
+            setOnClickListener {
+                val intent = Intent(Intent.ACTION_PICK).apply {
+                    type = "image/*"
+                }
+                startActivityForResult(intent, 1001) // requestCode 1001 untuk pilih foto
+            }
+        }
+
         addView(usernameInput)
         addView(phoneInput)
         addView(emailInput)
         addView(passInput)
+        addView(choosePhotoBtn)
 
         AlertDialog.Builder(this@MainActivity)
             .setTitle("Daftar Akun")
@@ -194,19 +296,23 @@ private fun showRegisterDialog() {
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                // Simpan data tambahan ke Realtime Database
                                 val userId = auth.currentUser?.uid
-                                val db = FirebaseDatabase.getInstance().reference
-                                val userMap = mapOf(
-                                    "username" to username,
-                                    "phone" to phone,
-                                    "email" to email
-                                )
-                                userId?.let {
-                                    db.child("users").child(it).setValue(userMap)
+                                if (userId != null) {
+                                    if (selectedImageUri != null) {
+                                        // Upload foto ke Firebase Storage
+                                        val storageRef = com.google.firebase.storage.FirebaseStorage.getInstance()
+                                            .reference.child("profile_pics/$userId.jpg")
+                                        storageRef.putFile(selectedImageUri!!)
+                                            .addOnSuccessListener {
+                                                storageRef.downloadUrl.addOnSuccessListener { uri ->
+                                                    saveUserToDatabase(userId, username, phone, email, uri.toString())
+                                                }
+                                            }
+                                    } else {
+                                        // Simpan tanpa foto
+                                        saveUserToDatabase(userId, username, phone, email, null)
+                                    }
                                 }
-
-                                // Kirim verifikasi email
                                 auth.currentUser?.sendEmailVerification()
                                 Toast.makeText(this@MainActivity, "Email verifikasi dikirim. Silakan cek email.", Toast.LENGTH_LONG).show()
                                 showLoginDialog()
@@ -226,6 +332,19 @@ private fun showRegisterDialog() {
     }
 }
 
+private fun saveUserToDatabase(userId: String, username: String, phone: String, email: String, photoUrl: String?) {
+    val db = FirebaseDatabase.getInstance().reference
+    val userMap = mutableMapOf(
+        "username" to username,
+        "phone" to phone,
+        "email" to email
+    )
+    if (photoUrl != null) {
+        userMap["photo"] = photoUrl
+    }
+    db.child("users").child(userId).setValue(userMap)
+}
+
  private fun showAccountDialog() {
     val userId = auth.currentUser?.uid ?: return
     val db = FirebaseDatabase.getInstance().reference
@@ -234,14 +353,29 @@ private fun showRegisterDialog() {
         val username = snapshot.child("username").value?.toString() ?: "-"
         val phone = snapshot.child("phone").value?.toString() ?: "-"
         val email = snapshot.child("email").value?.toString() ?: auth.currentUser?.email ?: "-"
+        val photoUrl = snapshot.child("photo").value?.toString()
+
+        val imageView = ImageView(this)
+        if (!photoUrl.isNullOrEmpty()) {
+            com.bumptech.glide.Glide.with(this).load(photoUrl).into(imageView)
+        } else {
+            imageView.setImageResource(R.drawable.ic_default_user) // default avatar
+        }
+
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(50, 20, 50, 10)
+            addView(imageView)
+            addView(TextView(context).apply { text = "Nama Pengguna: $username" })
+            addView(TextView(context).apply { text = "Nomor HP: $phone" })
+            addView(TextView(context).apply { text = "Email: $email" })
+        }
 
         AlertDialog.Builder(this)
             .setTitle("Profil Saya")
-            .setMessage("Nama Pengguna: $username\nNomor HP: $phone\nEmail: $email")
+            .setView(layout)
             .setPositiveButton("OK", null)
             .show()
-    }.addOnFailureListener {
-        Toast.makeText(this, "Gagal memuat data akun", Toast.LENGTH_SHORT).show()
     }
 }
 
@@ -469,8 +603,8 @@ private fun startClockUpdater() {
             menu.findItem(R.id.menu_privacy).title = "Kebijakan Privasi"
             menu.findItem(R.id.menu_set_pin).title = "Set PIN"
             menu.findItem(R.id.menu_delete_pin).title = "Hapus PIN"
-            menu.findItem(R.id.menu_webview1).title = "WebView 1"
-            menu.findItem(R.id.menu_webview2).title = "WebView 2"
+            menu.findItem(R.id.menu_webview1).title = "Destinations Finder"
+            menu.findItem(R.id.menu_webview2).title = "Airlines Finder"
             menu.findItem(R.id.menu_lang_id).title = "Bahasa Indonesia"
             menu.findItem(R.id.menu_lang_en).title = "Bahasa Inggris"
             menu.findItem(R.id.menu_lang_es).title = "Bahasa Spanyol"
@@ -490,8 +624,8 @@ private fun startClockUpdater() {
             menu.findItem(R.id.menu_privacy).title = "Privacy Policy"
             menu.findItem(R.id.menu_set_pin).title = "Set PIN"
             menu.findItem(R.id.menu_delete_pin).title = "Delete PIN"
-            menu.findItem(R.id.menu_webview1).title = "WebView 1"
-            menu.findItem(R.id.menu_webview2).title = "WebView 2"
+            menu.findItem(R.id.menu_webview1).title = "Destinations Finder"
+            menu.findItem(R.id.menu_webview2).title = "Airlines Finder"
             menu.findItem(R.id.menu_lang_id).title = "Indonesian"
             menu.findItem(R.id.menu_lang_en).title = "English"
             menu.findItem(R.id.menu_lang_es).title = "Spanish"
@@ -511,8 +645,8 @@ private fun startClockUpdater() {
             menu.findItem(R.id.menu_privacy).title = "Política de Privacidad"
             menu.findItem(R.id.menu_set_pin).title = "Establecer PIN"
             menu.findItem(R.id.menu_delete_pin).title = "Eliminar PIN"
-            menu.findItem(R.id.menu_webview1).title = "WebView 1"
-            menu.findItem(R.id.menu_webview2).title = "WebView 2"
+            menu.findItem(R.id.menu_webview1).title = "Buscador de destinos"
+            menu.findItem(R.id.menu_webview2).title = "Buscador de aerolíneas"
             menu.findItem(R.id.menu_lang_id).title = "Indonesio"
             menu.findItem(R.id.menu_lang_en).title = "Inglés"
             menu.findItem(R.id.menu_lang_es).title = "Español"
@@ -532,8 +666,8 @@ private fun startClockUpdater() {
             menu.findItem(R.id.menu_privacy).title = "سياسة الخصوصية"
             menu.findItem(R.id.menu_set_pin).title = "تعيين PIN"
             menu.findItem(R.id.menu_delete_pin).title = "حذف PIN"
-            menu.findItem(R.id.menu_webview1).title = "WebView 1"
-            menu.findItem(R.id.menu_webview2).title = "WebView 2"
+            menu.findItem(R.id.menu_webview1).title = "البحث عن الوجهات"
+            menu.findItem(R.id.menu_webview2).title = "مكتشف الخطوط الجوية"
             menu.findItem(R.id.menu_lang_id).title = "الإندونيسية"
             menu.findItem(R.id.menu_lang_en).title = "الإنجليزية"
             menu.findItem(R.id.menu_lang_es).title = "الإسبانية"
@@ -631,6 +765,7 @@ R.id.menu_webview2 -> {
     currentWebView = webView2  // ✅ assign WebView
 }
 
+
             // -------- Menu Baru: Multi Bahasa -----------
             R.id.menu_lang_id -> { preferences.edit { putString("language","id") }; applyLanguage("id"); recreate() }
             R.id.menu_lang_en -> { preferences.edit { putString("language","en") }; applyLanguage("en"); recreate() }
@@ -648,7 +783,7 @@ R.id.menu_webview2 -> {
         Toast.makeText(this, "Cek update dari GitHub...", Toast.LENGTH_SHORT).show()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val json = URL("https://api.github.com/repos/rossusuan-lab/AM-Finder/releases/latest").readText()
+                val json = URL("https://api.github.com/repos/rossusuan-lab/Airlines-Manager-Finder/releases/latest").readText()
                 val latest = JSONObject(json).getString("tag_name")
                 withContext(Dispatchers.Main) {
                     val currentVersion = packageManager.getPackageInfo(packageName, 0).versionName
