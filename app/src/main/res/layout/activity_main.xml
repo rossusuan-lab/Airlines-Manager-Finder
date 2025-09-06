@@ -25,6 +25,12 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <Button
+           android:id="@+id/googleSignInButton"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Login with Google"/>
+ 
     <!-- Progress Bar -->
     <ProgressBar
         android:id="@+id/progressBar"
