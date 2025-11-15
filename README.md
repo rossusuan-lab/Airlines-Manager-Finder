@@ -26,7 +26,7 @@ Airlines Manager Finder adalah aplikasi Android yang dirancang untuk membantu pe
 - **Flexible Toolbar Settings:** 19 pilihan warna toolbar yang bisa disimpan dan digunakan secara dinamis.
 
 ### **Core Features**
-- Login dan registrasi akun dummy/email
+- Login dan registrasi akun email google
 - Autentikasi PIN dengan reset 3 menit jika salah 3x
 - Toolbar dengan nama aplikasi dan warna kustom
 - WebView dengan pengaturan lengkap (`JavaScript`, `DOM Storage`, `File Access`)
